@@ -1,5 +1,17 @@
+def my_function():
+    led.set_brightness(200)
+    images.create_image("""
+        . . . . .
+                . # . . .
+                # # # . .
+                . # . . .
+                . . . . .
+    """).show_image(0)
+    led.set_brightness(200)
+WSJoyStick.on_key(KEY.F, my_function)
+
 # using extension from url:
-#   https://github.com/waveshare/JoyStick
+# https://github.com/waveshare/JoyStick
 
 def on_button_pressed_a():
     led.set_brightness(200)
@@ -33,6 +45,30 @@ def checkJS():
     else:
         basic.show_icon(IconNames.SMALL_DIAMOND)
 
+def my_function2():
+    led.set_brightness(200)
+    images.create_image("""
+        . . # . .
+                . # # # .
+                . . # . .
+                . . . . .
+                . . . . .
+    """).show_image(0)
+    led.set_brightness(200)
+WSJoyStick.on_key(KEY.E, my_function2)
+
+def my_function3():
+    led.set_brightness(200)
+    images.create_image("""
+        . . . . .
+                . . . # .
+                . . # # #
+                . . . # .
+                . . . . .
+    """).show_image(0)
+    led.set_brightness(200)
+WSJoyStick.on_key(KEY.D, my_function3)
+
 def on_button_pressed_b():
     led.set_brightness(200)
     images.create_image("""
@@ -48,6 +84,19 @@ input.on_button_pressed(Button.B, on_button_pressed_b)
 def activityBright(image: Image):
     led.set_brightness(200)
     image.show_image(0, 400)
+
+def my_function4():
+    led.set_brightness(200)
+    images.create_image("""
+        . . . . .
+                . . . . .
+                . . # . .
+                . # # # .
+                . . # . .
+    """).show_image(0)
+    led.set_brightness(200)
+WSJoyStick.on_key(KEY.C, my_function4)
+
 def heartbeat():
     led.set_brightness(200)
     basic.pause(50)
@@ -74,4 +123,3 @@ def on_forever():
     basic.pause(50)
     heartbeat()
 basic.forever(on_forever)
-
