@@ -43,6 +43,17 @@ function checkJS () {
         basic.showIcon(IconNames.SmallDiamond)
     }
 }
+WSJoyStick.onKey(KEY.P, function () {
+    led.setBrightness(200)
+    images.createImage(`
+        # # # # #
+        # . . . #
+        # . # . #
+        # . . . #
+        # # # # #
+        `).showImage(0)
+    led.setBrightness(200)
+})
 WSJoyStick.onKey(KEY.E, function () {
     led.setBrightness(200)
     images.createImage(`
