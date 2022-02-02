@@ -1,204 +1,223 @@
-function split_msg_value (message: string) {
+function split_msg_value(message: string): string {
     return convertToText(_py.py_string_split(message, ":")[1])
 }
-WSJoyStick.onKey(KEY.F, function () {
+
+WSJoyStick.onKey(KEY.F, function my_function() {
     led.setBrightness(200)
     images.createImage(`
         . . . . .
-        . # . . .
-        # # # . .
-        . # . . .
-        . . . . .
-        `).showImage(0)
+                . # . . .
+                # # # . .
+                . # . . .
+                . . . . .
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "red")
 })
-function process_send_queue () {
+function process_send_queue() {
+    
     sndQueueValue = convertToText(sendQueue.shift())
     if (sndQueueValue != "undefined") {
-        if (split_msg_name(sndQueueValue) == "id") {
-            radio.sendString(sndQueueValue)
-            show_message_value(sndQueueValue, 100)
-        }
+        radio.sendString(sndQueueValue)
+        serial.writeLine("send:" + sndQueueValue)
     }
+    
 }
-function draw_out_dot () {
+
+function draw_out_dot() {
     led.plotBrightness(4, 2, 255)
     basic.pause(50)
-    for (let value of [2, 1, 0]) {
-        led.plotBrightness(4, value, 255)
+    for (let an_element of [2, 1, 0]) {
+        led.plotBrightness(4, 0, 255)
         basic.pause(50)
     }
     basic.pause(50)
-    for (let value2 of [2, 1, 0]) {
-        led.plotBrightness(4, value2, 0)
+    for (let an_element2 of [2, 1, 0]) {
+        led.plotBrightness(4, an_element2, 0)
         basic.pause(50)
     }
 }
-function send_message (message2: string) {
-    sendQueue.push(message2)
-    draw_out_dot()
-}
-function show_message_value (message3: string, brightness: number) {
-	
-}
-// using extension from url:
-// https://github.com/waveshare/JoyStick
-input.onButtonPressed(Button.A, function () {
-    led.setBrightness(200)
-    images.createImage(`
-        . . # . .
-        . # . # .
-        . # # # .
-        . # . # .
-        . # . # .
-        `).showImage(0)
-    led.setBrightness(200)
-    sndValue = "id" + ":" + lastDeviceChar
-    send_message(sndValue)
-})
-function split_msg_name (message4: string) {
-    return convertToText(_py.py_string_split(message4, ":")[0])
-}
-function checkJS () {
+
+function check_joystick() {
     if (WSJoyStick.Listen_Dir(DIR.U)) {
-        activityBright(images.arrowImage(ArrowNames.North))
+        send_move_direction("forward", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.North))
     } else if (WSJoyStick.Listen_Dir(DIR.D)) {
-        activityBright(images.arrowImage(ArrowNames.South))
+        send_move_direction("back", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.South))
     } else if (WSJoyStick.Listen_Dir(DIR.L)) {
-        activityBright(images.arrowImage(ArrowNames.West))
+        send_move_direction("left", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.West))
     } else if (WSJoyStick.Listen_Dir(DIR.R)) {
-        activityBright(images.arrowImage(ArrowNames.East))
+        send_move_direction("right", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.East))
     } else if (WSJoyStick.Listen_Dir(DIR.U_L)) {
-        activityBright(images.arrowImage(ArrowNames.NorthWest))
+        send_move_direction("forward_left", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.NorthWest))
     } else if (WSJoyStick.Listen_Dir(DIR.D_L)) {
-        activityBright(images.arrowImage(ArrowNames.SouthWest))
+        send_move_direction("back_left", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.SouthWest))
     } else if (WSJoyStick.Listen_Dir(DIR.U_R)) {
-        activityBright(images.arrowImage(ArrowNames.NorthEast))
+        send_move_direction("forward_right", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.NorthEast))
     } else if (WSJoyStick.Listen_Dir(DIR.D_R)) {
-        activityBright(images.arrowImage(ArrowNames.SouthEast))
+        send_move_direction("back_right", pins.digitalReadPin(DigitalPin.P1), pins.digitalReadPin(DigitalPin.P2), images.arrowImage(ArrowNames.SouthEast))
     } else {
         basic.showIcon(IconNames.SmallDiamond)
     }
+    
 }
-function draw_in_dot () {
+
+function send_message(message2: string) {
+    sendQueue.push(message2)
+    draw_out_dot()
+}
+
+function send_move_direction(direction: string, xpos: number, ypos: number, image: Image) {
+    send_message("move" + ":" + direction + "," + ("" + xpos) + "," + ("" + ypos))
+    image.showImage(0)
+}
+
+//  using extension from url:
+//  https://github.com/waveshare/JoyStick
+input.onButtonPressed(Button.A, function on_button_pressed_a() {
+    led.setBrightness(200)
+    images.createImage(`
+        . . # . .
+                . # . # .
+                . # # # .
+                . # . # .
+                . # . # .
+    `).showImage(0)
+    led.setBrightness(200)
+    send_message("action" + ":" + "a")
+})
+function split_msg_name(message4: string): string {
+    return convertToText(_py.py_string_split(message4, ":")[0])
+}
+
+function draw_in_dot() {
+    let value3: number;
     led.plotBrightness(4, 0, 255)
     basic.pause(50)
-    for (let value3 of [0, 1, 2]) {
+    for (let an_element3 of [0, 1, 2]) {
+        value3 = 0
         led.plotBrightness(4, value3, 255)
         basic.pause(50)
     }
     basic.pause(50)
-    for (let value4 of [0, 1, 2]) {
-        led.plotBrightness(4, value4, 0)
+    for (let an_element4 of [0, 1, 2]) {
+        led.plotBrightness(4, an_element4, 0)
         basic.pause(50)
     }
 }
-function process_recv_queue () {
+
+function process_recv_queue() {
+    
     recvQueueValue = convertToText(recvQueue.shift())
-    if (split_msg_name(recvQueueValue) == "id") {
-        if (split_msg_value(recvQueueValue) != lastDeviceChar) {
-            show_message_value(recvQueueValue, 200)
-        }
+    if (recvQueueValue != "undefined") {
+        serial.writeLine("recv:" + ("" + radio.receivedPacket(RadioPacketProperty.SerialNumber)) + "," + ("" + radio.receivedPacket(RadioPacketProperty.SignalStrength)) + "," + recvQueueValue)
     }
+    
 }
-WSJoyStick.onKey(KEY.P, function () {
+
+WSJoyStick.onKey(KEY.P, function my_function2() {
     led.setBrightness(200)
     images.createImage(`
         # # # # #
-        # . . . #
-        # . # . #
-        # . . . #
-        # # # # #
-        `).showImage(0)
+                # . . . #
+                # . # . #
+                # . . . #
+                # # # # #
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "hat_click")
 })
-function recv_message (message42: string) {
+function show_bright_image(image2: Image) {
+    image2.showImage(0)
+    led.setBrightness(200)
+}
+
+function recv_message(message42: string) {
     recvQueue.push(message42)
     draw_in_dot()
 }
-WSJoyStick.onKey(KEY.E, function () {
+
+WSJoyStick.onKey(KEY.E, function my_function3() {
     led.setBrightness(200)
     images.createImage(`
         . . # . .
-        . # # # .
-        . . # . .
-        . . . . .
-        . . . . .
-        `).showImage(0)
+                . # # # .
+                . . # . .
+                . . . . .
+                . . . . .
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "green")
 })
-WSJoyStick.onKey(KEY.D, function () {
+WSJoyStick.onKey(KEY.D, function my_function4() {
     led.setBrightness(200)
     images.createImage(`
         . . . . .
-        . . . # .
-        . . # # #
-        . . . # .
-        . . . . .
-        `).showImage(0)
+                . . . # .
+                . . # # #
+                . . . # .
+                . . . . .
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "blue")
 })
-radio.onReceivedString(function (receivedString) {
+radio.onReceivedString(function on_received_string(receivedString: string) {
     recv_message(receivedString)
 })
-input.onButtonPressed(Button.B, function () {
+input.onButtonPressed(Button.B, function on_button_pressed_b() {
     led.setBrightness(200)
     images.createImage(`
         . # # . .
-        . # . # .
-        . # # . .
-        . # . # .
-        . # # . .
-        `).showImage(0)
+                . # . # .
+                . # # . .
+                . # . # .
+                . # # . .
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "b")
 })
-function activityBright (image: Image) {
-    image.showImage(0)
-    led.setBrightness(200)
-}
-WSJoyStick.onKey(KEY.C, function () {
+WSJoyStick.onKey(KEY.C, function my_function5() {
     led.setBrightness(200)
     images.createImage(`
         . . . . .
-        . . . . .
-        . . # . .
-        . # # # .
-        . . # . .
-        `).showImage(0)
+                . . . . .
+                . . # . .
+                . # # # .
+                . . # . .
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "white")
 })
-function heartbeat () {
+function heartbeat() {
     led.setBrightness(200)
     basic.pause(50)
     led.setBrightness(100)
 }
-input.onLogoEvent(TouchButtonEvent.Pressed, function () {
+
+input.onLogoEvent(TouchButtonEvent.Pressed, function on_logo_pressed() {
     led.setBrightness(200)
     images.createImage(`
         . . . . .
-        . # # # .
-        # . . . #
-        . # # # .
-        . . . . .
-        `).showImage(0)
+                . # # # .
+                # . . . #
+                . # # # .
+                . . . . .
+    `).showImage(0)
     led.setBrightness(200)
+    send_message("action" + ":" + "logo")
 })
-let recvQueue: string[] = []
+let recvQueue : string[] = []
 let recvQueueValue = ""
-let sndValue = ""
-let sendQueue: string[] = []
+let sendQueue : string[] = []
 let sndQueueValue = ""
-let lastDeviceChar = ""
-lastDeviceChar = convertToText(control.deviceSerialNumber()).substr(-1, 1)
 radio.setTransmitSerialNumber(true)
 radio.setGroup(1)
 WSJoyStick.JoyStickInit()
 basic.showIcon(IconNames.SmallDiamond)
 heartbeat()
-basic.forever(function () {
+basic.forever(function on_forever() {
     process_send_queue()
     process_recv_queue()
-    checkJS()
+    check_joystick()
     basic.pause(50)
     heartbeat()
 })
