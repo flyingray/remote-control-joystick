@@ -1,5 +1,7 @@
 def split_msg_value(message: str):
     return convert_to_text(message.split(":")[1])
+# using extension from url:
+# https://github.com/waveshare/JoyStick
 
 def my_function():
     led.set_brightness(200)
@@ -15,11 +17,11 @@ def my_function():
 WSJoyStick.on_key(KEY.F, my_function)
 
 def process_send_queue():
-    global sndQueueValue
-    sndQueueValue = convert_to_text(sendQueue.shift())
-    if sndQueueValue != "undefined":
-        radio.send_string(sndQueueValue)
-        serial.write_line("send:" + sndQueueValue)
+    global snd_queue_value
+    snd_queue_value = convert_to_text(send_queue.shift())
+    if snd_queue_value != "undefined":
+        radio.send_string(snd_queue_value)
+        serial.write_line("send:" + snd_queue_value)
 def draw_out_dot():
     led.plot_brightness(4, 2, 255)
     basic.pause(50)
@@ -74,13 +76,11 @@ def check_joystick():
     else:
         basic.show_icon(IconNames.SMALL_DIAMOND)
 def send_message(message2: str):
-    sendQueue.append(message2)
+    send_queue.append(message2)
     draw_out_dot()
 def send_move_direction(direction: str, xpos: number, ypos: number, image: Image):
-    send_message("move" + ":" + direction + "," + str(xpos) + "," + str(ypos))
+    send_message("move" + ":" + direction + "," + ("" + str(xpos)) + "," + ("" + str(ypos)))
     image.show_image(0)
-# using extension from url:
-# https://github.com/waveshare/JoyStick
 
 def on_button_pressed_a():
     led.set_brightness(200)
@@ -109,10 +109,10 @@ def draw_in_dot():
         led.plot_brightness(4, an_element4, 0)
         basic.pause(50)
 def process_recv_queue():
-    global recvQueueValue
-    recvQueueValue = convert_to_text(recvQueue.shift())
-    if recvQueueValue != "undefined":
-        serial.write_line("recv:" + str(radio.received_packet(RadioPacketProperty.SERIAL_NUMBER)) + "," + str(radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)) + "," + recvQueueValue)
+    global recv_queue_value
+    recv_queue_value = convert_to_text(recv_queue.shift())
+    if recv_queue_value != "undefined":
+        serial.write_line("recv:" + ("" + str(radio.received_packet(RadioPacketProperty.SERIAL_NUMBER))) + "," + ("" + str(radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH))) + "," + recv_queue_value)
 
 def my_function2():
     led.set_brightness(200)
@@ -131,7 +131,7 @@ def show_bright_image(image2: Image):
     image2.show_image(0)
     led.set_brightness(200)
 def recv_message(message42: str):
-    recvQueue.append(message42)
+    recv_queue.append(message42)
     draw_in_dot()
 
 def my_function3():
@@ -208,10 +208,10 @@ def on_logo_pressed():
     send_message("action" + ":" + "logo")
 input.on_logo_event(TouchButtonEvent.PRESSED, on_logo_pressed)
 
-recvQueue: List[str] = []
-recvQueueValue = ""
-sendQueue: List[str] = []
-sndQueueValue = ""
+recv_queue: List[str] = []
+recv_queue_value = ""
+send_queue: List[str] = []
+snd_queue_value = ""
 radio.set_transmit_serial_number(True)
 radio.set_group(1)
 WSJoyStick.joy_stick_init()
